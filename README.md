@@ -9,7 +9,7 @@ An end‑to‑end **Hybrid Search** RAG app for **research papers** you upload. 
 
 > Repo layout highlights: `searchapp.py` (Streamlit app), `requirements.txt`, and `bm25_values.json` (precomputed BM25 stats).
 
-Link:
+* Link: https://hybrid-search-with-langchain-and-pinecone-4wfyhak4haoyxgftcr8h.streamlit.app
 ---
 
 ## Features
