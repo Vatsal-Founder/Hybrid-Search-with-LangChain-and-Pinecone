@@ -31,7 +31,6 @@ numexpr
 mysql-connector-python
 SQLAlchemy
 langchain_nvidia_ai_endpoints
-pinecone-client
 pinecone-text
 pinecone-notebooks
 pinecone
