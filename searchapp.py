@@ -53,7 +53,7 @@ st.write("Upload PDFs and chat with their research paper")
 
 groq_api_key = st.text_input("Enter your Groq API key:", type="password")
 
-llm=ChatGroq(groq_api_key=groq_api_key, model="llama3-70b-8192")
+llm=ChatGroq(groq_api_key=groq_api_key, model="openai/gpt-oss-20b")
 
 uploaded_files=st.file_uploader("Choose A Research Paper", type="pdf", accept_multiple_files=True)
 
