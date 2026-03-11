@@ -21,19 +21,11 @@ An end‑to‑end **Hybrid Search** RAG app for **research papers** you upload. 
 
 ---
 
+
 ## Architecture
 
-```
-[User (Streamlit UI)]
-      │  upload PDF(s), ask questions
-      ▼
-[Loader]  →  [Text Splitter]  →  [Embeddings (dense)] ┐
-                                          ├─ upsert → [Pinecone Hybrid Index]
-[Sparse Encoder (BM25)]  ─────────────────┘
-      │                                 │
-      ▼                                 ▼
-  user query  ───────────────▶  [Hybrid Retriever] ─▶ [LLM (answer + sources)]
-```
+
+<img width="1536" height="1024" alt="ChatGPT Image Mar 11, 2026 at 04_13_51 PM" src="https://github.com/user-attachments/assets/edd727e2-a492-4d01-866d-25da25d4573a" />
 
 ---
 
