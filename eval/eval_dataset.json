@@ -1,0 +1,82 @@
+[
+  {
+    "user_input": "What is the main contribution of the Attention Is All You Need paper?",
+    "reference": "The paper introduces the Transformer architecture, which relies entirely on self-attention mechanisms instead of recurrence or convolutions for sequence transduction tasks."
+  },
+  {
+    "user_input": "How does BERT differ from GPT in terms of training approach?",
+    "reference": "BERT uses bidirectional training by masking tokens and predicting them from both left and right context, while GPT uses unidirectional (left-to-right) autoregressive training."
+  },
+  {
+    "user_input": "What is the purpose of positional encoding in transformers?",
+    "reference": "Positional encodings inject information about the position of tokens in the sequence since the self-attention mechanism has no inherent notion of token order."
+  },
+  {
+    "user_input": "What problem does Retrieval Augmented Generation solve?",
+    "reference": "RAG addresses the limitation of LLMs having static knowledge by augmenting generation with relevant documents retrieved from an external knowledge base at inference time."
+  },
+  {
+    "user_input": "How does BM25 scoring work in information retrieval?",
+    "reference": "BM25 is a sparse retrieval algorithm that ranks documents based on term frequency, inverse document frequency, and document length normalization to estimate relevance to a query."
+  },
+  {
+    "user_input": "What is the difference between dense and sparse retrieval?",
+    "reference": "Dense retrieval uses learned vector embeddings to capture semantic similarity, while sparse retrieval uses exact term matching with algorithms like BM25 or TF-IDF."
+  },
+  {
+    "user_input": "Why is hybrid search better than dense-only search?",
+    "reference": "Hybrid search combines the semantic understanding of dense embeddings with the precise keyword matching of sparse methods, improving recall on queries where one method alone would miss relevant results."
+  },
+  {
+    "user_input": "What is the role of the retriever in a RAG pipeline?",
+    "reference": "The retriever fetches the most relevant documents or passages from a knowledge base given a user query, which are then passed to the generator LLM as context for answer generation."
+  },
+  {
+    "user_input": "What are ROUGE metrics used for in NLP?",
+    "reference": "ROUGE metrics measure the overlap between a generated summary and reference summaries using n-gram co-occurrence, used primarily to evaluate automatic summarization quality."
+  },
+  {
+    "user_input": "What is the vanishing gradient problem in RNNs?",
+    "reference": "The vanishing gradient problem occurs when gradients become exponentially small during backpropagation through time, making it difficult for RNNs to learn long-range dependencies in sequences."
+  },
+  {
+    "user_input": "How does multi-head attention improve over single-head attention?",
+    "reference": "Multi-head attention allows the model to jointly attend to information from different representation subspaces at different positions, capturing diverse patterns that a single attention head might miss."
+  },
+  {
+    "user_input": "What is knowledge distillation in machine learning?",
+    "reference": "Knowledge distillation is a technique where a smaller student model is trained to mimic the behavior of a larger teacher model, transferring learned representations into a more compact architecture."
+  },
+  {
+    "user_input": "What is the purpose of the context window in LLMs?",
+    "reference": "The context window defines the maximum number of tokens an LLM can process in a single forward pass, limiting how much text it can consider when generating a response."
+  },
+  {
+    "user_input": "How does chunking affect RAG retrieval quality?",
+    "reference": "Chunk size affects the granularity of retrieved context — too large chunks may include irrelevant information, while too small chunks may lose important context, both impacting answer quality."
+  },
+  {
+    "user_input": "What is the difference between extractive and abstractive summarization?",
+    "reference": "Extractive summarization selects and concatenates important sentences from the source text, while abstractive summarization generates new sentences that paraphrase the key information."
+  },
+  {
+    "user_input": "What is fine-tuning in the context of large language models?",
+    "reference": "Fine-tuning adapts a pre-trained model to a specific task or domain by continuing training on a smaller, task-specific dataset, updating the model weights to improve performance on that task."
+  },
+  {
+    "user_input": "What is the role of temperature in LLM text generation?",
+    "reference": "Temperature controls the randomness of predictions by scaling the logits before softmax — lower values make output more deterministic, higher values increase diversity and creativity."
+  },
+  {
+    "user_input": "How do vector databases support semantic search?",
+    "reference": "Vector databases store and index high-dimensional embeddings, enabling fast approximate nearest neighbor search to find semantically similar items based on vector distance or similarity."
+  },
+  {
+    "user_input": "What is hallucination in the context of LLMs?",
+    "reference": "Hallucination refers to when an LLM generates plausible-sounding but factually incorrect or unsupported information that is not grounded in the provided context or training data."
+  },
+  {
+    "user_input": "What evaluation metrics are commonly used for RAG systems?",
+    "reference": "Common RAG evaluation metrics include faithfulness (factual consistency with context), answer relevancy (pertinence to the query), context precision (relevance of retrieved chunks), and context recall (coverage of required information)."
+  }
+]
