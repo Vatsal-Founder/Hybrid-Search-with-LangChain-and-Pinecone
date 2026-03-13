@@ -95,7 +95,7 @@ with st.sidebar:
     if remaining <= 0:
         st.warning("Free demo limit reached. Clone the repo to run unlimited.")
 
-    if uploaded_files:
+    if uploaded_files and st.button("📥 Index Documents", type="primary"):
         with st.spinner("Chunking & indexing..."):
             documents = []
             for uploaded_file in uploaded_files:
