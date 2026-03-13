@@ -6,7 +6,7 @@
 
 Hybrid search **RAG system** for **research papers** combining **dense embeddings** with **sparse BM25 scoring** — with **RAGAS evaluation** for retrieval quality measurement. Built with LangChain, Pinecone, and Groq.
 
-Demo link: https://github.com/Vatsal-Founder/Hybrid-Search-with-LangChain-and-Pinecone/blob/main/app.py
+Demo link: https://hybrid-search-with-langchain-and-pinecone-mptxyopuspbexbdzqham.streamlit.app
 
 > **Key result:** Hybrid retrieval improves precision by 35% over dense-only search with query latency under 1.5 seconds.
 
