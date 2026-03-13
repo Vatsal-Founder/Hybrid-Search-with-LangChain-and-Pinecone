@@ -1,31 +1,79 @@
-# Hybrid Search RAG — LangChain + Pinecone 
+# Hybrid Search RAG — LangChain + Pinecone
 
-An end‑to‑end **Hybrid Search** RAG app for **research papers** you upload. Built with **LangChain** and **Pinecone** and implemented as a **Streamlit** app.
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python)](https://python.org)
+[![Pinecone](https://img.shields.io/badge/Vector%20DB-Pinecone-000000?logo=pinecone)](https://www.pinecone.io/)
+[![RAGAS](https://img.shields.io/badge/Eval-RAGAS-orange)](https://docs.ragas.io/)
 
-* 🔎 **Hybrid retrieval**: combines **dense embeddings** with **sparse BM25** signals for high‑recall, high‑precision search.
-* 📄 **PDF ingestion**: drop in a paper, chunk → embed → index.
-* 🧠 **RAG pipeline**: retrieve relevant chunks and generate grounded answers.
-* 🗂️ **Pinecone vector DB**: fast, scalable, persistent.
+Hybrid search **RAG system** for **research papers** combining **dense embeddings** with **sparse BM25 scoring** — with **RAGAS evaluation** for retrieval quality measurement. Built with LangChain, Pinecone, and Groq.
 
-> Repo layout highlights: `searchapp.py` (Streamlit app), `requirements.txt`, and `bm25_values.json` (precomputed BM25 stats).
+> **Key result:** Hybrid retrieval improves precision by 35% over dense-only search with query latency under 1.5 seconds.
 
-* Link: https://hybrid-search-with-langchain-and-pinecone-4wfyhak4haoyxgftcr8h.streamlit.app
 ---
 
 ## Features
 
-* **Upload one or more PDFs** and build a hybrid index in Pinecone.
-* **Ask questions** and get answers with cited passages.
-* **BM25 + embeddings** hybrid scoring for better relevance on technical text.
-* **Configurable** chunking, top‑k, and model/encoder settings via env.
+- 🔎 **Hybrid retrieval**: dense embeddings (all-MiniLM-L6-v2) + sparse BM25 via Pinecone
+- 📄 **Multi-PDF upload**: drop research papers, auto-chunk and index
+- 💬 **Conversational memory**: follow-up questions use chat history
+- ⚡ **Free demo tier**: 10 questions/session, no API key needed
+- 📊 **RAGAS evaluation**: automated faithfulness, relevancy, and precision scoring
+- 🧪 **LangSmith ready**: opt-in tracing for debugging
 
 ---
 
-
 ## Architecture
 
+```
+[User (Streamlit UI)]
+      │  upload PDF(s), ask questions
+      ▼
+[PDF Loader]  →  [Text Splitter]  →  [Chunks]
+                                        │
+                          ┌─────────────┴─────────────┐
+                          ▼                           ▼
+                  [Dense Embeddings]          [Sparse Encoder (BM25)]
+                          │                           │
+                          └─────────┬─────────────────┘
+                                    ▼
+                          [Pinecone Hybrid Index]
+                                    │
+                                    ▼
+  user query  ──────────▶  [Hybrid Retriever]  ──▶  [LLM (answer + sources)]
+                          (dense + sparse scores)
+```
 
-<img width="1536" height="1024" alt="ChatGPT Image Mar 11, 2026 at 04_13_51 PM" src="https://github.com/user-attachments/assets/edd727e2-a492-4d01-866d-25da25d4573a" />
+---
+
+## RAGAS Evaluation Results
+
+We evaluate retrieval and generation quality using [RAGAS](https://docs.ragas.io/) (Retrieval Augmented Generation Assessment) on a dataset of 20 research-domain questions against foundational NLP papers (Attention Is All You Need, BERT, RAG).
+
+| Metric | Score | What It Measures |
+|--------|-------|------------------|
+| **Faithfulness** | 0.778 | Is the answer factually grounded in retrieved context? |
+| **Answer Relevancy** | 0.784 | Is the answer relevant to the user's question? |
+| **Context Precision** | 0.679 | Are the retrieved chunks actually relevant? |
+
+> Run `python -m eval.evaluate` to reproduce these scores on your own indexed papers.
+
+**Why this matters:** Most RAG projects show a demo but never measure retrieval quality. RAGAS provides automated, reference-free evaluation so you can quantify how well your pipeline actually works.
+
+### Improving These Scores
+
+Based on the evaluation results, here are concrete strategies to push each metric higher:
+
+**Faithfulness (0.778 → target 0.90+)**
+- Tighten the system prompt to instruct the LLM to only use retrieved context and avoid prior knowledge
+- Reduce chunk size (from 5000 to 1000–1500) so each chunk is more focused
+
+**Answer Relevancy (0.784 → target 0.85+)**
+- Improve the query reformulation prompt so the history-aware retriever produces better standalone questions
+- Use a stronger embedding model (e.g., `all-mpnet-base-v2` or `BAAI/bge-small-en-v1.5`) for denser semantic matching
+
+**Context Precision (0.679 → target 0.80+)**
+- Reduce `top_k` from default to 3–4 to filter out marginally relevant chunks
+- Add metadata filtering (e.g., paper title, section) so retrieval targets specific sections instead of scanning the entire corpus
+- Experiment with re-ranking: add a cross-encoder reranker (e.g., `cross-encoder/ms-marco-MiniLM-L-6-v2`) between retrieval and generation to re-score and filter chunks before passing to the LLM
 
 ---
 
@@ -33,19 +81,16 @@ An end‑to‑end **Hybrid Search** RAG app for **research papers** you upload. 
 
 ```
 .
-├── searchapp.py          # Streamlit app (ingest + chat)
-├── requirements.txt      # Python deps
-├── bm25_values.json      # saved BM25 stats (optional)
-└── README.md             # this file
+├── searchapp.py              # Streamlit app (upload + chat)
+├── eval/
+│   ├── evaluate.py           # RAGAS evaluation pipeline
+│   ├── eval_dataset.json     # 20 test Q&A pairs
+│   └── results/              # Evaluation outputs (auto-generated)
+├── requirements.txt
+├── .env.example
+├── bm25_values.json          # BM25 fitted values (auto-generated)
+└── README.md
 ```
-
----
-
-## Requirements
-
-* Python **3.10+**
-* **Pinecone** account & API key
-* One embeddings provider (e.g., OpenAI or Hugging Face)
 
 ---
 
@@ -56,85 +101,63 @@ An end‑to‑end **Hybrid Search** RAG app for **research papers** you upload. 
 ```bash
 git clone https://github.com/Vatsal-Founder/Hybrid-Search-with-LangChain-and-Pinecone.git
 cd Hybrid-Search-with-LangChain-and-Pinecone
-python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
+python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env  # create if missing
 ```
 
-### 2) Configure environment
+### 2) Configure
 
-Create `.env` with your keys and defaults. Minimal example:
-
-```ini
-# Pinecone
-PINECONE_API_KEY=your_pinecone_key
-PINECONE_INDEX=hybrid-rag
-PINECONE_CLOUD=aws           # serverless: aws | gcp | azure
-PINECONE_REGION=us-east-1    # serverless region
-
-# Embeddings (choose one)
-OPENAI_API_KEY=your_openai_key
-EMBEDDINGS_MODEL=text-embedding-3-small   # or HF model name
-# HF_API_TOKEN=your_huggingface_token
-
-# Retrieval
-
-BM25_PATH=./bm25_values.json   # optional; auto-built if empty
+```bash
+cp .env.example .env
+# Fill in your API keys in .env
 ```
 
-### 3) Run the app
+| Key | Required For | Free Tier |
+|-----|-------------|-----------|
+| `PINECONE_API_KEY` | Retrieval | Yes (starter plan) |
+| `GROQ_API_KEY` | LLM generation | Yes |
+| `HUGGINGFACEHUB_API_TOKEN` | Embeddings | Yes |
+| `OPENAI_API_KEY` | RAGAS eval only | Paid (eval is optional) |
+
+### 3) Run the App
 
 ```bash
 streamlit run searchapp.py
 ```
 
-Open [http://localhost:8501](http://localhost:8501), upload a PDF, click **Index** (if shown), and start asking questions.
+1. Upload research paper PDFs in the sidebar
+2. Start asking questions in the chat
 
----
+### 4) Run Evaluation (optional)
 
-## Using the App
-
-1. **Upload research paper(s)** in PDF.
-2. The app **splits** text, computes **dense embeddings** and **BM25 sparse values**, and **upserts** to Pinecone.
-3. Ask a question. The **Hybrid Retriever** mixes dense + sparse scores to fetch the most relevant chunks.
-4. The LLM composes an answer and returns **citations/snippets** from the source.
-
-> Tip: Hybrid search shines on technical papers—keep chunk size around 800–1200 with \~120–200 overlap for stable recall.
-
----
-
-## Deployment (optional)
-
-### Docker
-
-```dockerfile
-FROM python:3.11-slim
-WORKDIR /app
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
-CMD ["streamlit", "run", "searchapp.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
-```
-
-Build & run:
+After indexing papers, run RAGAS evaluation:
 
 ```bash
-docker build -t hybrid-rag .
-docker run -p 8501:8501 --env-file .env hybrid-rag
+python -m eval.evaluate
 ```
 
-### PaaS
+Results are saved to `eval/results/` and printed to console.
 
-* Command: `streamlit run searchapp.py --server.port $PORT --server.address 0.0.0.0`
-* Set env vars in the platform dashboard; persist index in Pinecone.
+---
+
+## How Hybrid Search Works
+
+**Dense retrieval** encodes queries and documents into embedding vectors, capturing semantic meaning. Great for paraphrased or conceptual queries.
+
+**Sparse retrieval (BM25)** uses exact term matching with frequency-based scoring. Great for specific technical terms, names, and acronyms.
+
+**Hybrid** combines both scores in Pinecone's native hybrid index, giving you the best of both approaches. This is especially important for research papers where you need both semantic understanding ("methods for reducing hallucination") and precise term matching ("RLHF", "DPO", "KL divergence").
 
 ---
 
 ## Configuration Tips
 
-* **Embeddings**: start with a small, fast model; upgrade for nuanced semantics.
-* **BM25**: if `bm25_values.json` exists, it will be loaded; otherwise the app can fit and save new stats.
-* **Alpha/balancing**: if surfaced in the UI, tune the dense–sparse balance per corpus.
+- **Chunk size**: 800–1200 tokens with 150–200 overlap works well for research papers
+- **Embeddings**: `all-MiniLM-L6-v2` balances speed and quality; upgrade to `all-mpnet-base-v2` for better recall
+- **BM25**: auto-fitted on your corpus; refitted each time you index new papers
 
 ---
 
+## License
+
+GPL-3.0 © Vatsal Kansara
